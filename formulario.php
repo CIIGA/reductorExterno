@@ -40,6 +40,7 @@ where Id='$idUsr'";
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="js/alerta.js"></script>
         <style>
             body {
                 background-image: url(img/back.jpg);
@@ -60,10 +61,49 @@ where Id='$idUsr'";
                 margin-top: -1%;
                 padding-top: 0px;
             }
+
+            .oculto {
+                display: none;
+            }
         </style>
+
     </head>
 
     <body>
+        <?php
+        if (isset($_SESSION['error_vacio'])) {
+            echo "<script>
+    window.onload = function() {
+        mostrarSweetAlert('error', 'Error', '" . htmlspecialchars($_SESSION['error_vacio']) . "');
+    };
+</script>";
+            unset($_SESSION['error_vacio']);
+        }
+        if (isset($_SESSION['registro_success'])) {
+            echo "<script>
+    window.onload = function() {
+        mostrarSweetAlert('success', 'Registro Exitoso!', '" . htmlspecialchars($_SESSION['registro_success']) . "');
+    };
+</script>";
+            unset($_SESSION['registro_success']);
+        }
+        if (isset($_SESSION['foto_error'])) {
+            echo "<script>
+    window.onload = function() {
+        mostrarSweetAlert('error', 'Error', '" . htmlspecialchars($_SESSION['foto_error']) . "');
+    };
+</script>";
+            unset($_SESSION['foto_error']);
+        }
+        if (isset($_SESSION['registro_error'])) {
+            echo "<script>
+    window.onload = function() {
+        mostrarSweetAlert('error', 'Error', '" . htmlspecialchars($_SESSION['registro_error']) . "');
+    };
+</script>";
+            unset($_SESSION['registro_error']);
+        }
+        ?>
         <nav class="navbar navbar-dark bg-dark">
             <a class="navbar-brand" href="#">
                 <img src="img/logoImplementtaHorizontal.png" width="150" height="50" class="d-inline-block align-top" alt="">
@@ -86,7 +126,7 @@ where Id='$idUsr'";
 
         </div>
         <div class="container mt-4">
-            <form>
+            <form action="RegistrarReductor.php" method="post" enctype="multipart/form-data" onsubmit="return validarFormulario()">
                 <!-- Input de texto -->
                 <div class="form-group">
                     <label>Cuenta: <strong><?= $_SESSION['cuenta'] ?></strong></label>
@@ -120,6 +160,7 @@ where Id='$idUsr'";
                 <div class="form-group" id="divObservaciones">
                     <label>Observaciones:*</label>
                     <select class="form-control" id="observaciones" name="idCatalogoreductores">
+                        <option value=""></option>
 
                     </select>
                 </div>
@@ -178,17 +219,25 @@ where Id='$idUsr'";
                 <div class="d-flex justify-content-center mb-3">
                     <label for="dz1" class="btn btn-info mr-2">Tomar foto Evidencia</label>
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#preview1Modal"><i class="fa-regular fa-image"></i></button>
-                    <input id="dz1" type="file" name="foto1" accept="image/*" capture="environment" hidden>
+                    <input id="dz1" type="file" name="foto1" accept="image/*" capture="environment" class="oculto">
                 </div>
 
                 <div class="d-flex justify-content-center mb-3">
                     <label for="dz2" class="btn btn-info mr-2">Tomar foto del predio</label>
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#preview2Modal"><i class="fa-regular fa-image"></i></button>
-                    <input id="dz2" type="file" name="foto2" accept="image/*" capture="environment" hidden>
+                    <input id="dz2" type="file" name="foto2" accept="image/*" capture="environment" class="oculto">
                 </div>
+                <!-- Campo de entrada para latitud -->
+                <input type="text" id="latitud" name="latitud" placeholder="Latitud" hidden>
+
+                <!-- Campo de entrada para longitud -->
+                <input type="text" id="longitud" name="longitud" placeholder="Longitud" hidden>
+
                 <hr>
                 <!-- Botón de envío -->
                 <button type="submit" class="btn btn-primary">Terminar</button>
+                <a href="verificar.php" class="btn btn-dark btn-sm "><i class="fas fa-angle-left"></i> Regresar</a>
+
             </form>
         </div>
         <!-- modal foto evidencia -->
@@ -250,6 +299,52 @@ where Id='$idUsr'";
     </body>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="js/fotos.js"></script>
+    <script>
+        function validarFormulario() {
+            var foto1 = document.getElementById('dz1').value;
+            var foto2 = document.getElementById('dz2').value;
+
+            // Validar que los campos no estén vacíos
+            if (foto1 === '' || foto2 === '') {
+                Swal.fire({
+                    icon: "error",
+                    title: "Datos incompletos",
+                    text: "Toma las fotos que se te pide.",
+                    timer: 2000, // Duración en milisegundos (2 segundos en este caso)
+                    showConfirmButton: false // Ocultar el botón de confirmación
+                });
+                return false; // Evita que el formulario se envíe
+            }
+
+            // Otras validaciones según tus necesidades
+
+            // Si la validación es exitosa, permite que el formulario se envíe
+            return true;
+        }
+    </script>
+    <script>
+        $(document).ready(function() {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        // Obtener latitud y longitud
+                        var latitud = position.coords.latitude;
+                        var longitud = position.coords.longitude;
+
+                        // Mostrar los valores en los campos de entrada
+                        document.getElementById("latitud").value = latitud;
+                        document.getElementById("longitud").value = longitud;
+                    },
+                    function(error) {
+                        // Manejar errores de geolocalización
+                        console.error("Error al obtener la ubicación:", error.message);
+                    }
+                );
+            } else {
+                alert("Tu navegador no soporta la geolocalización.");
+            }
+        });
+    </script>
     <script>
         // Función para llenar el segundo ComboBox con datos de la base de datos
         function llenarDescTarea(idTarea) {
@@ -382,6 +477,8 @@ where Id='$idUsr'";
                 }
 
             });
+
+
 
         });
     </script>
