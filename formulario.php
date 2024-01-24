@@ -1,0 +1,394 @@
+<?php
+session_start();
+if (isset($_SESSION['AspUsr'])) {
+    require "include/cnx.php";
+    $plz = $_SESSION['dataB'];
+    $idUsr = $_SESSION['AspUsr'];
+    $cnxPlz = conexion('implementtaTijuanaA');
+
+    $Countcu = "select COUNT(ctas.Cuenta) as numReg from asignacionReductorExterno as ctas
+  inner join implementta on implementta.Cuenta=ctas.Cuenta";
+    $Countcuen = sqlsrv_query($cnxPlz, $Countcu);
+    $Countctas = sqlsrv_fetch_array($Countcuen);
+    //******************************************************************
+    $ne = "select UserName,Nombre from AspNetUsers
+where Id='$idUsr'";
+    $netU = sqlsrv_query($cnxPlz, $ne);
+    $usuario = sqlsrv_fetch_array($netU);
+    //******************************************************************
+
+    $sql_tareas = sqlsrv_query($cnxPlz, "select idTarea,DescripcionTarea from CatalogoTareas where idTarea in ('68','69')");
+    $sql_servicios = sqlsrv_query($cnxPlz, "select * from catalogoTipoServicio");
+    $sql_estatusToma = sqlsrv_query($cnxPlz, " select * from catalogoEstatusToma");
+    $sql_tipoToma = sqlsrv_query($cnxPlz, "select * from catalogoTipoToma");
+
+?>
+    <!DOCTYPE html>
+    <html>
+
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Supervision</title>
+        <link rel="icon" href="img/implementtaIcon.png">
+        <link rel="stylesheet" href="include/fontawesome6/css/all.min.css">
+        <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <style>
+            body {
+                background-image: url(img/back.jpg);
+                background-repeat: repeat;
+                background-size: 100%;
+                /*        background-attachment: fixed;*/
+                overflow-x: hidden;
+                /* ocultar scrolBar horizontal*/
+                /* overflow-y: hidden;  ocultar scrolBar horizontal*/
+            }
+
+            body {
+                font-family: sans-serif;
+                font-style: normal;
+                font-weight: normal;
+                width: 100%;
+                height: 100%;
+                margin-top: -1%;
+                padding-top: 0px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <nav class="navbar navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">
+                <img src="img/logoImplementtaHorizontal.png" width="150" height="50" class="d-inline-block align-top" alt="">
+            </a>
+            <ul class="navbar-nav">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="logout.php"><i class="fas fa-sign-out-alt"></i></a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="container padding">
+            <br>
+            <div style="text-align: center;">
+                <h6 style="text-shadow: 0px 0px 2px #717171;"><i class="fas fa-user"></i> <?php echo $usuario['Nombre'] ?></h6>
+            </div>
+            <hr>
+
+
+        </div>
+        <div class="container mt-4">
+            <form>
+                <!-- Input de texto -->
+                <div class="form-group">
+                    <label>Cuenta: <strong><?= $_SESSION['cuenta'] ?></strong></label>
+                </div>
+
+                <!-- Opción desplegable -->
+                <div class="form-group">
+                    <label for="opciones">Acción:*</label>
+                    <select class="form-control" id="tarea" name="idTarea" required>
+                        <option value="">--selecione una opción</option>
+                        <?php while ($tareas = sqlsrv_fetch_array($sql_tareas)) { ?>
+                            <option value="<?= $tareas['idTarea'] ?>"><?= utf8_encode($tareas['DescripcionTarea']) ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Descripcion de acción:*</label>
+                    <select class="form-control" id="descTarea" name="iddescripciontarea" required>
+
+                    </select>
+                </div>
+                <!-- si selecciona que si instalo niple -->
+                <div class="form-group" id="divNiple">
+                    <label>Niple:*</label>
+                    <select class="form-control" id="niple" name="id_niple">
+
+                    </select>
+                </div>
+                <!-- si selecciona que no instalo niple -->
+                <div class="form-group" id="divObservaciones">
+                    <label>Observaciones:*</label>
+                    <select class="form-control" id="observaciones" name="idCatalogoreductores">
+
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>lectura:</label>
+                    <input type="text" class="form-control" id="lectura" name="lectura" placeholder="Ingresa la lectura">
+                </div>
+
+
+
+                <div class="form-group">
+                    <label>Tipo de servicio servicio:*</label>
+                    <select class="form-control" name="idTipoServicio" required>
+                        <option value="">--selecione una opción</option>
+                        <?php while ($servicios = sqlsrv_fetch_array($sql_servicios)) { ?>
+                            <option value="<?= $servicios['idTipoServicio'] ?>"><?= utf8_encode($servicios['TipoServicio']) ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Estatus de toma:*</label>
+                    <select class="form-control" id="estatusToma" name="idEstatusToma" required>
+                        <option value="">--selecione una opción</option>
+                        <?php while ($estatusToma = sqlsrv_fetch_array($sql_estatusToma)) { ?>
+                            <option value="<?= $estatusToma['idEstatusToma'] ?>"><?= utf8_encode($estatusToma['EstatusToma']) ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+
+                <div class="form-group" id="divTipoToma">
+                    <label>Tipo de toma:*</label>
+                    <select class="form-control" id="tipoToma" name="idTipoToma">
+                        <option value="">--selecione una opción</option>
+                        <?php while ($tipoToma = sqlsrv_fetch_array($sql_tipoToma)) { ?>
+                            <option value="<?= $tipoToma['idTipoToma'] ?>"><?= utf8_encode($tipoToma['TipoToma']) ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+
+                <!-- Área de texto -->
+                <div class="form-group">
+                    <label>Conclusiones:</label>
+                    <textarea class="form-control" name="observaciones" rows="4" placeholder="Escribe tus conclusiones"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Fecha promesa de pago:</label>
+                    <input type="date" class="form-control" name="FechaPromesaPago">
+                </div>
+                <div class="form-group">
+                    <label>proxima revisión:</label>
+                    <input type="date" class="form-control" name="FechaVencimiento">
+                </div>
+                <h3 class="text-center">Evidencia fotografica</h3>
+                <div class="d-flex justify-content-center mb-3">
+                    <label for="dz1" class="btn btn-info mr-2">Tomar foto Evidencia</label>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#preview1Modal"><i class="fa-regular fa-image"></i></button>
+                    <input id="dz1" type="file" name="foto1" accept="image/*" capture="environment" hidden>
+                </div>
+
+                <div class="d-flex justify-content-center mb-3">
+                    <label for="dz2" class="btn btn-info mr-2">Tomar foto del predio</label>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#preview2Modal"><i class="fa-regular fa-image"></i></button>
+                    <input id="dz2" type="file" name="foto2" accept="image/*" capture="environment" hidden>
+                </div>
+                <hr>
+                <!-- Botón de envío -->
+                <button type="submit" class="btn btn-primary">Terminar</button>
+            </form>
+        </div>
+        <!-- modal foto evidencia -->
+        <div class="modal fade" id="preview1Modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+
+                    <!-- Contenido del modal -->
+                    <div class="modal-body">
+                        <!-- Aquí puedes cambiar la ruta de la imagen -->
+                        <div id="preview1" style="height: 600px;">
+                            <img src="img/sinFoto.png" height="350px" width="100%"></img>
+                        </div>
+                    </div>
+
+                    <!-- Botón para cerrar el modal -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- modal foto predio -->
+        <div class="modal fade" id="preview2Modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+
+                    <!-- Contenido del modal -->
+                    <div class="modal-body">
+                        <!-- Aquí puedes cambiar la ruta de la imagen -->
+                        <div id="preview2" style="height: 600px;">
+                            <img src="img/sinFoto.png" height="350px" width="100%"></img>
+                        </div>
+                    </div>
+
+                    <!-- Botón para cerrar el modal -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <br><br>
+        <!--*************************INICIO FOOTER***********************************************************************-->
+        <footer class="text-center">
+            <div class="container">
+                <span class="navbar-text" style="font-size:11px;font-weigth:normal;color: #7a7a7a;">Implementta <i class="far fa-registered"></i><br>
+                    Estrategas de México <i class="far fa-registered"></i><br>
+                    Centro de Inteligencia Informática y Geografía Aplicada CIIGA
+                    <hr style="width:105%;border-color:#7a7a7a;">
+                    Creado y diseñado por © <?php echo date('Y') ?> Estrategas de México
+                </span>
+            </div>
+        </footer>
+        <br><br><br><br>
+        <!--***********************************FIN FOOTER****************************************************************-->
+    </body>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="js/fotos.js"></script>
+    <script>
+        // Función para llenar el segundo ComboBox con datos de la base de datos
+        function llenarDescTarea(idTarea) {
+            $.ajax({
+                url: 'obtenerDatos/obtener_descTarea.php',
+                type: 'GET',
+                data: {
+                    idTarea: idTarea
+                },
+                success: function(data) {
+                    if (data.trim() === "") {
+                        // Si la respuesta está vacía, agregar la opción "Sin datos"
+                        $('#descTarea').html("<option value=''>Sin descripciones</option>");
+                    } else {
+                        // Si hay datos, llenar el segundo ComboBox con la respuesta del servidor
+                        $('#descTarea').html(data);
+                    }
+                }
+            });
+        }
+
+        // Manejar cambios en el primer ComboBox
+        $('#tarea').on('change', function() {
+            var idTarea = $(this).val();
+            llenarDescTarea(idTarea);
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            // Selecciona el primer select
+            var descTarea = $("#descTarea");
+
+            // Selecciona el segundo select
+            var divNiple = $("#divNiple");
+
+            // Oculta el segundo select al cargar la página
+            divNiple.hide();
+
+            // Selecciona el div del select de observaciones
+            var divObservaciones = $("#divObservaciones");
+            divObservaciones.hide();
+
+            descTarea.change(function() {
+                // Obtén el valor seleccionado
+                var descTareaValue = $(this).val();
+
+                // Si el valor seleccionado es específico, muestra el segundo select, de lo contrario, ocúltalo
+                if (descTareaValue === "1") {
+                    divNiple.show();
+
+                } else {
+                    divNiple.hide();
+                    if (descTareaValue === "2") {
+                        divObservaciones.show();
+
+                    } else {
+                        divObservaciones.hide();
+                    }
+                }
+
+
+
+            });
+
+            // Selecciona el select de estatus 
+            var estatusToma = $("#estatusToma");
+
+            // Selecciona el div de tipoToma
+            var divTipoToma = $("#divTipoToma");
+
+            // Oculta divEstatus
+            divTipoToma.hide();
+
+            estatusToma.change(function() {
+                // Obtén el valor seleccionado
+                var estatusTomaValue = $(this).val();
+
+                // Si el valor seleccionado es específico, muestra el segundo select, de lo contrario, ocúltalo
+                if (estatusTomaValue === "2") {
+                    divTipoToma.show();
+
+                } else {
+                    divTipoToma.hide();
+                }
+
+
+
+            });
+
+            function llenarNiple() {
+                $.ajax({
+                    url: 'obtenerDatos/obtener_niple.php',
+                    type: 'GET',
+                    success: function(data) {
+                        if (data.trim() === "") {
+                            // Si la respuesta está vacía, agregar la opción "Sin datos"
+                            $('#niple').html("<option value=''>Sin descripciones</option>");
+                        } else {
+                            // Si hay datos, llenar el segundo ComboBox con la respuesta del servidor
+                            $('#niple').html(data);
+                        }
+                    }
+                });
+            }
+
+            function llenarObservaciones() {
+                $.ajax({
+                    url: 'obtenerDatos/obtener_observaciones.php',
+                    type: 'GET',
+                    success: function(data) {
+                        if (data.trim() === "") {
+                            // Si la respuesta está vacía, agregar la opción "Sin datos"
+                            $('#observaciones').html("<option value=''>Sin observaciones</option>");
+                        } else {
+                            // Si hay datos, llenar el segundo ComboBox con la respuesta del servidor
+                            $('#observaciones').html(data);
+                        }
+                    }
+                });
+            }
+
+            // Manejar cambios en el primer ComboBox
+            $('#descTarea').on('change', function() {
+                var descTareaValue = $("#descTarea").val();
+                if (descTareaValue === '1') {
+                    llenarNiple();
+                }
+                if (descTareaValue === '2') {
+                    llenarObservaciones();
+                }
+
+            });
+
+        });
+    </script>
+
+    </html>
+<?php
+} else {
+    echo '<meta http-equiv="refresh" content="0,url=logout.php">';
+}
+?>
