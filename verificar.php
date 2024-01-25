@@ -30,6 +30,7 @@ $usuario = sqlsrv_fetch_array($netU);
   <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="js/alerta.js"></script>
   <style>
     body {
       background-image: url(img/back.jpg);
@@ -54,6 +55,15 @@ $usuario = sqlsrv_fetch_array($netU);
 </head>
 
 <body>
+<?php
+  if (isset($_SESSION['registro_success'])) {
+    echo "<script>
+window.onload = function() {
+mostrarSweetAlert('success', 'Registro Exitoso!', '" . htmlspecialchars($_SESSION['registro_success']) . "');
+};
+</script>";
+    unset($_SESSION['registro_success']);
+} ?>
   <nav class="navbar navbar-dark bg-dark">
     <a class="navbar-brand" href="#">
       <img src="img/logoImplementtaHorizontal.png" width="150" height="50" class="d-inline-block align-top" alt="">
@@ -147,7 +157,7 @@ $usuario = sqlsrv_fetch_array($netU);
                 </div>
                 <div class="card-footer text-center bg-info" style="padding: 0;" >
                   <a href="formulario.php" class="btn btn-block btn-lg btn-sm" style="margin: 0; transition: background-color 0.3s;">
-                    Visualizar <i class="fas fa-arrow-circle-right"></i>
+                    Gestionar Cuenta <i class="fas fa-arrow-circle-right"></i>
                   </a>
                 </div>
               </div>

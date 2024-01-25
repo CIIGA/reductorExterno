@@ -51,11 +51,11 @@ if (isset($_SESSION['AspUsr']) and isset($_SESSION['cuenta'])) {
 
         // Guardar la ruta en la base de datos
         // (Asegúrate de usar funciones seguras para evitar inyección SQL)
-        $ruta_db_evidencia = "C:/wamp64/www/reductorExterno/$ruta_destino_evidencia";
-        $ruta_db_predio = "C:/wamp64/www/reductorExterno/$ruta_destino_predio";
+        $ruta_db_evidencia = "D:/Plesk/Vhosts/gallant-driscoll.198-71-62-113.plesk.page/httpdocs/implementta/modulos/reductorExterno/$ruta_destino_evidencia";
+        $ruta_db_predio = "D:/Plesk/Vhosts/gallant-driscoll.198-71-62-113.plesk.page/httpdocs/implementta/modulos/reductorExterno/$ruta_destino_predio";
 
         $sql_insert = sqlsrv_query($cnxPlz, "INSERT INTO registroReductorExterno (Cuenta,idTarea,idCatalogoreductores,lectura,
-        id_niple,observaciones,FechaPromesaPago,fechaVencimiento,fechaCaptura,iddescripciontarea,Latitud,Longitud,IdAspUser,
+        idniple,observaciones,FechaPromesaPago,fechaVencimiento,fechaCaptura,iddescripciontarea,Latitud,Longitud,IdAspUser,
         idTipoServicio,idEstatusToma,idTipoToma) values ('$cuenta','$idtarea','$idCatalogoreductores','$lectura',
         '$id_niple','$observaciones','$FechaPromesaPago','$FechaVencimiento','$fechaCaptura','$iddescripciontarea','$latitud','$longitud',
         '$id_user','$idTipoServicio','$idEstatusToma','$idTipoToma')");

@@ -153,7 +153,7 @@ where Id='$idUsr'";
                 <div class="form-group" id="divNiple">
                     <label>Niple:*</label>
                     <select class="form-control" id="niple" name="id_niple">
-
+                            <option value=""></option>
                     </select>
                 </div>
                 <!-- si selecciona que no instalo niple -->
