@@ -16,7 +16,7 @@ where Id='$idUsr'";
   $netU = sqlsrv_query($cnxPlz, $ne);
   $usuario = sqlsrv_fetch_array($netU);
 
-  
+
   //******************************************************************
 ?>
   <!DOCTYPE html>
@@ -134,7 +134,8 @@ mostrarSweetAlert('success', 'Registro Exitoso!', '" . htmlspecialchars($_SESSIO
         <?php if (isset($_GET['cuenta'])) {
 
           $ctaFind = $_GET['cuenta'];
-          $cu = "select i.Cuenta, Propietario, concat(calle,' ',NumExt,' ',NumInt,' ',colonia,', ',Poblacion,' ',CP) as direccion
+          $cu = "select i.Cuenta, Propietario, concat(calle,' ',NumExt,' ',NumInt,' ',colonia,', ',Poblacion,' ',CP) as direccion,
+          Latitud,Longitud
   from asignacionReductorExterno as a inner join implementta as i on a.Cuenta=i.Cuenta
   where a.Cuenta='$ctaFind'";
           $cuen = sqlsrv_query($cnxPlz, $cu);
@@ -142,12 +143,12 @@ mostrarSweetAlert('success', 'Registro Exitoso!', '" . htmlspecialchars($_SESSIO
         ?>
           <?php if (isset($ctas)) {
             $_SESSION['cuenta'] = $ctas['Cuenta'];
-            $cuenta= $ctas['Cuenta'];
-            $sql_gestion=sqlsrv_query($cnxPlz,"SELECT top 1 fechaCaptura,DescripcionTarea  from registroReductorExterno as r
+            $cuenta = $ctas['Cuenta'];
+            $sql_gestion = sqlsrv_query($cnxPlz, "SELECT top 1 fechaCaptura,DescripcionTarea  from registroReductorExterno as r
             inner join CatalogoTareas as c on r.idTarea=c.IdTarea
             where Cuenta='$cuenta'
             order by 1 desc");
-            $gestion=sqlsrv_fetch_array($sql_gestion);
+            $gestion = sqlsrv_fetch_array($sql_gestion);
           ?>
             <br>
             <div class="row justify-content-center align-items-center">
@@ -160,20 +161,37 @@ mostrarSweetAlert('success', 'Registro Exitoso!', '" . htmlspecialchars($_SESSIO
                   </div>
                   <div class="card-body text-black">
 
-                    <p class="card-text">Propietario: <?= utf8_encode($ctas['Propietario']) ?></p>
+                    <p class="card-text">Propietario: <?= str_replace('¥', 'Ñ', utf8_encode($ctas['Propietario'])) ?></p>
                     <p class="card-text">Dirección: <?= utf8_encode($ctas['direccion']) ?></p>
+                    <?php
+                      if (($ctas['Latitud'] == NULL) or ($ctas['Latitud'] == 0.000000) or ($ctas['Longitud'] == NULL) or ($ctas['Longitud'] == 0.000000)) {
+                        $ubiGest = 'No disponible';
+                      } else {
+                        $ubiGest = $ctas['Latitud'] . ',' . $ctas['Longitud'];
+                      }
+                      ?>
+                      <div class="text-center">
+                        <small class="form-text text-muted">Ubicación: <?php echo $ubiGest ?></small>
+                      </div>
+                      <br>
+                      <?php if ($ubiGest <> 'No disponible') { ?>
+                        <div style="text-align: center;">
+                          <a href="https://www.google.com/maps/search/?api=1&query=<?php echo $ubiGest ?>&zoom=30" target="_blank" class="btn btn-outline-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Editar"><img width="22" height="22" src="https://img.icons8.com/color/48/google-maps-new.png" alt="google-maps-new" /> Ver ubicación de ultima gestion</a>
+                        </div>
+                      <?php } else { ?>
+                        <small class="form-text text-muted"><i class="fas fa-terminal"></i> Maps no Disponible</small>
+                      <?php } ?>
                   </div>
-                  <?php if (isset($gestion)) { ?>
+                  <?php if (isset($gestion)) { 
+                    ?>
                     <div class="card-footer text-center bg-warning" style="padding: 0;">
-                    <p class="card-text">Ultima Gestion: <?= $gestion['fechaCaptura']->format('Y-m-d') ?></p>
-                    <p class="card-text">Tarea: <?= utf8_encode($gestion['DescripcionTarea'])?></p>
-                    
-
-                  </div>
+                      <p class="card-text">Ultima Gestion: <?= $gestion['fechaCaptura']->format('Y-m-d') ?></p>
+                      <p class="card-text">Tarea: <?= utf8_encode($gestion['DescripcionTarea']) ?></p>
+                    </div>
                   <?php } ?>
-                 
-                  <div class="card-footer text-center bg-info" style="padding: 0;">
-                    <a href="formulario.php" class="btn btn-block btn-lg btn-sm" style="margin: 0; transition: background-color 0.3s;">
+
+                  <div class="card-footer text-center " style="padding: 1;">
+                    <a href="formulario.php" class="btn btn-block btn-lg btn-primary" style="transition: background-color 0.3s;">
                       Gestionar Cuenta <i class="fas fa-arrow-circle-right"></i>
                     </a>
                   </div>
