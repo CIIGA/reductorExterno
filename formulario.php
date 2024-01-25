@@ -65,6 +65,11 @@ where Id='$idUsr'";
             .oculto {
                 display: none;
             }
+            .footer {
+              margin-top: auto;
+              width: 100%;
+            }
+       </style>
         </style>
 
     </head>
@@ -128,74 +133,71 @@ where Id='$idUsr'";
         <div class="container mt-4">
             <form action="RegistrarReductor.php" method="post" enctype="multipart/form-data" onsubmit="return validarFormulario()">
                 <!-- Input de texto -->
-                <div class="form-group">
+                <div class="form-group mb-3">
                     <label>Cuenta: <strong><?= $_SESSION['cuenta'] ?></strong></label>
                 </div>
 
                 <!-- Opción desplegable -->
-                <div class="form-group">
+                <div class="form-group mb-3">
                     <label for="opciones">Acción:*</label>
-                    <select class="form-control" id="tarea" name="idTarea" required>
-                        <option value="">--selecione una opción</option>
+                    <select class="form-control" id="tarea" name="idTarea" required autofocus>
+                        <option value="">--seleccione una opción</option>
                         <?php while ($tareas = sqlsrv_fetch_array($sql_tareas)) { ?>
                             <option value="<?= $tareas['idTarea'] ?>"><?= utf8_encode($tareas['DescripcionTarea']) ?></option>
                         <?php } ?>
                     </select>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mb-3">
                     <label>Descripcion de acción:*</label>
                     <select class="form-control" id="descTarea" name="iddescripciontarea" required>
 
                     </select>
                 </div>
-                <!-- si selecciona que si instalo niple -->
-                <div class="form-group" id="divNiple">
+
+                <div class="form-group mb-3" id="divNiple">
                     <label>Niple:*</label>
                     <select class="form-control" id="niple" name="id_niple">
-                            <option value=""></option>
+                        <option value=""></option>
                     </select>
                 </div>
-                <!-- si selecciona que no instalo niple -->
-                <div class="form-group" id="divObservaciones">
+
+                <div class="form-group mb-3" id="divObservaciones">
                     <label>Observaciones:*</label>
                     <select class="form-control" id="observaciones" name="idCatalogoreductores">
                         <option value=""></option>
-
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label>lectura:</label>
+                <div class="form-group mb-3">
+                    <label>Lectura:</label>
                     <input type="text" class="form-control" id="lectura" name="lectura" placeholder="Ingresa la lectura">
                 </div>
 
-
-
-                <div class="form-group">
+                <div class="form-group mb-3">
                     <label>Tipo de servicio servicio:*</label>
                     <select class="form-control" name="idTipoServicio" required>
-                        <option value="">--selecione una opción</option>
+                        <option value="">--seleccione una opción</option>
                         <?php while ($servicios = sqlsrv_fetch_array($sql_servicios)) { ?>
                             <option value="<?= $servicios['idTipoServicio'] ?>"><?= utf8_encode($servicios['TipoServicio']) ?></option>
                         <?php } ?>
                     </select>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mb-3">
                     <label>Estatus de toma:*</label>
                     <select class="form-control" id="estatusToma" name="idEstatusToma" required>
-                        <option value="">--selecione una opción</option>
+                        <option value="">--seleccione una opción</option>
                         <?php while ($estatusToma = sqlsrv_fetch_array($sql_estatusToma)) { ?>
                             <option value="<?= $estatusToma['idEstatusToma'] ?>"><?= utf8_encode($estatusToma['EstatusToma']) ?></option>
                         <?php } ?>
                     </select>
                 </div>
 
-                <div class="form-group" id="divTipoToma">
+                <div class="form-group mb-3" id="divTipoToma">
                     <label>Tipo de toma:*</label>
                     <select class="form-control" id="tipoToma" name="idTipoToma">
-                        <option value="">--selecione una opción</option>
+                        <option value="">--seleccione una opción</option>
                         <?php while ($tipoToma = sqlsrv_fetch_array($sql_tipoToma)) { ?>
                             <option value="<?= $tipoToma['idTipoToma'] ?>"><?= utf8_encode($tipoToma['TipoToma']) ?></option>
                         <?php } ?>
@@ -203,29 +205,41 @@ where Id='$idUsr'";
                 </div>
 
                 <!-- Área de texto -->
-                <div class="form-group">
+                <div class="form-group mb-3">
                     <label>Conclusiones:</label>
                     <textarea class="form-control" name="observaciones" rows="4" placeholder="Escribe tus conclusiones"></textarea>
                 </div>
-                <div class="form-group">
+
+                <div class="form-group mb-3">
                     <label>Fecha promesa de pago:</label>
                     <input type="date" class="form-control" name="FechaPromesaPago">
                 </div>
-                <div class="form-group">
-                    <label>proxima revisión:</label>
+
+                <div class="form-group mb-3">
+                    <label>Próxima revisión:</label>
                     <input type="date" class="form-control" name="FechaVencimiento">
                 </div>
-                <h3 class="text-center">Evidencia fotografica</h3>
+
+                <h3 class="text-center">Evidencia fotográfica</h3>
+
                 <div class="d-flex justify-content-center mb-3">
                     <label for="dz1" class="btn btn-info mr-2">Tomar foto Evidencia</label>
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#preview1Modal"><i class="fa-regular fa-image"></i></button>
                     <input id="dz1" type="file" name="foto1" accept="image/*" capture="environment" class="oculto">
+                </div>
+                <div class="alig-items-center text-center mb-3">
+                    <div id="preview1" style="height: 120px;">
+                        <img src="img/sinFoto.png" height="100px" width="100px" alt="Foto 1">
+                    </div>
                 </div>
 
                 <div class="d-flex justify-content-center mb-3">
                     <label for="dz2" class="btn btn-info mr-2">Tomar foto del predio</label>
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#preview2Modal"><i class="fa-regular fa-image"></i></button>
                     <input id="dz2" type="file" name="foto2" accept="image/*" capture="environment" class="oculto">
+                </div>
+                <div class="alig-items-center text-center mb-3">
+                    <div id="preview2" style="height: 120px;">
+                        <img src="img/sinFoto.png" height="100px" width="100px" alt="Foto 2">
+                    </div>
                 </div>
                 <!-- Campo de entrada para latitud -->
                 <input type="text" id="latitud" name="latitud" placeholder="Latitud" hidden>
@@ -235,56 +249,20 @@ where Id='$idUsr'";
 
                 <hr>
                 <!-- Botón de envío -->
-                <button type="submit" class="btn btn-primary">Terminar</button>
-                <a href="verificar.php" class="btn btn-dark btn-sm "><i class="fas fa-angle-left"></i> Regresar</a>
+                <div class="d-flex justify-content-center mb-3">
+                    <button type="submit" class="btn btn-warning btn-lg">Finalizar</button>
+                </div>
+                <div class="d-flex justify-content-center mb-3">
+                    <a href="verificar.php" class="btn btn-dark btn-sm"><i class="fas fa-angle-left"></i> Regresar</a>
+                </div>
 
             </form>
         </div>
-        <!-- modal foto evidencia -->
-        <div class="modal fade" id="preview1Modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-
-                    <!-- Contenido del modal -->
-                    <div class="modal-body">
-                        <!-- Aquí puedes cambiar la ruta de la imagen -->
-                        <div id="preview1" style="height: 600px;">
-                            <img src="img/sinFoto.png" height="350px" width="100%"></img>
-                        </div>
-                    </div>
-
-                    <!-- Botón para cerrar el modal -->
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-        <!-- modal foto predio -->
-        <div class="modal fade" id="preview2Modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-
-                    <!-- Contenido del modal -->
-                    <div class="modal-body">
-                        <!-- Aquí puedes cambiar la ruta de la imagen -->
-                        <div id="preview2" style="height: 600px;">
-                            <img src="img/sinFoto.png" height="350px" width="100%"></img>
-                        </div>
-                    </div>
-
-                    <!-- Botón para cerrar el modal -->
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    </div>
-
-                </div>
-            </div>
-        </div>
+        
+       
         <br><br>
         <!--*************************INICIO FOOTER***********************************************************************-->
-        <footer class="text-center">
+        <footer class="text-center footer">
             <div class="container">
                 <span class="navbar-text" style="font-size:11px;font-weigth:normal;color: #7a7a7a;">Implementta <i class="far fa-registered"></i><br>
                     Estrategas de México <i class="far fa-registered"></i><br>

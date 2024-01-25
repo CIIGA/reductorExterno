@@ -39,7 +39,7 @@ function returnFileSize(number) {
 
 function updateImageDisplay(idPreview) {
   let preview = document.getElementById(idPreview);
-  console.log(preview);
+
   while (preview.firstChild) {
     preview.removeChild(preview.firstChild);
   }
@@ -51,30 +51,31 @@ function updateImageDisplay(idPreview) {
     curFiles = zona2.files;
   }
 
-  console.log(curFiles);
-
   if (curFiles.length === 0) {
     let sinImg = document.createElement('img');
-    sinImg.height = "350";
-    sinImg.style.width = "100%";
+    sinImg.height = "100px";
+    sinImg.style.width = "100px";
     sinImg.src = "img/sinFoto.png";
     preview.appendChild(sinImg);
   } else {
-
     for (const file of curFiles) {
       const divImg = document.createElement('div');
       const para = document.createElement('p');
+
       if (validFileType(file)) {
         para.textContent = `Tamaño de archivo: ${returnFileSize(file.size)}.`;
         const image = document.createElement('img');
-        image.height = "550";
-        image.style.width = "100%";
+        
+        // Establecer dimensiones máximas de 100x100 píxeles
+        image.style.maxHeight = "100px";
+        image.style.maxWidth = "100px";
+
         image.src = URL.createObjectURL(file);
 
         divImg.appendChild(image);
         divImg.appendChild(para);
       } else {
-        para.textContent = `Archivo: ${file.name}: Tipo no valido, selecciona otra foto..`;
+        para.textContent = `Archivo: ${file.name}: Tipo no válido, selecciona otra foto.`;
         divImg.appendChild(para);
       }
       preview.appendChild(divImg);
