@@ -32,7 +32,7 @@ if (isset($_SESSION['AspUsr']) and isset($_SESSION['cuenta'])) {
         $longitud = $_POST['longitud'];
         $id_user = $_SESSION['AspUsr'];
         $cuenta = trim($_SESSION['cuenta']);
-        $fechaCaptura = date('Y-m-d') . ' ' . date('H:i:s');
+        $fechaCaptura = date('Y-m-d');
 
 
         $fechaActual = date('Ymd');
@@ -61,7 +61,7 @@ if (isset($_SESSION['AspUsr']) and isset($_SESSION['cuenta'])) {
         '$id_user','$idTipoServicio','$idEstatusToma','$idTipoToma')");
         if ($sql_insert) {
             $sql_id_ReductorExterno = sqlsrv_query($cnxPlz, "select top 1 idRegistroReductores as id from registroReductorExterno
-            where Cuenta='$cuenta' and fechaCaptura='$fechaCaptura'");
+            where Cuenta='$cuenta' order by idRegistroReductores asc");
             $array_id_ReductorExterno = sqlsrv_fetch_array($sql_id_ReductorExterno);
             $id_ReductorExterno = $array_id_ReductorExterno['id'];
             $sql_foto = sqlsrv_query($cnxPlz, "insert into FotosReductorExterno (ubicacion,id_ReductorExterno,tipo) values

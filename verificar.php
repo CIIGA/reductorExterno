@@ -143,7 +143,9 @@ mostrarSweetAlert('success', 'Registro Exitoso!', '" . htmlspecialchars($_SESSIO
           <?php if (isset($ctas)) {
             $_SESSION['cuenta'] = $ctas['Cuenta'];
             $cuenta= $ctas['Cuenta'];
-            $sql_gestion=sqlsrv_query($cnxPlz,"SELECT top 1 fechaCaptura from registroReductorExterno where Cuenta='$cuenta'
+            $sql_gestion=sqlsrv_query($cnxPlz,"SELECT top 1 fechaCaptura,DescripcionTarea  from registroReductorExterno as r
+            inner join CatalogoTareas as c on r.idTarea=c.IdTarea
+            where Cuenta='$cuenta'
             order by 1 desc");
             $gestion=sqlsrv_fetch_array($sql_gestion);
           ?>
@@ -164,6 +166,8 @@ mostrarSweetAlert('success', 'Registro Exitoso!', '" . htmlspecialchars($_SESSIO
                   <?php if (isset($gestion)) { ?>
                     <div class="card-footer text-center bg-warning" style="padding: 0;">
                     <p class="card-text">Ultima Gestion: <?= $gestion['fechaCaptura']->format('Y-m-d') ?></p>
+                    <p class="card-text">Tarea: <?= utf8_encode($gestion['DescripcionTarea'])?></p>
+                    
 
                   </div>
                   <?php } ?>
